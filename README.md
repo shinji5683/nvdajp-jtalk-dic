@@ -25,17 +25,24 @@ cd src/mecab-src/src
 nmake /f Makefile.mak MACHINE=x64 mecab.lib mecab-dict-index.exe
 ```
 
-### 2. 辞書のビルド
+### 2. 辞書のビルド（英語読み辞書の切り替え対応: `bep` / `cmudict`）
+
+ユーザーが好みに応じて「標準カタカナ英語読み（`bep-eng.dic`）」と「英語発音ベースの読み（`CMUdict` + `arpabet_to_kana.py`）」を選択・切り替えできるよう、`--eng-dic {bep,cmudict}` オプション（または環境変数 `NVDAJP_ENG_DIC`）に対応しています。
 
 ```console
-python src/nvdajp-jtalk-dic/make_jdic.py --mecab-dict-index src/mecab-src/src/mecab-dict-index.exe --outdir build/dic
+# 標準カタカナ英語読み（bep-eng.dic、既定）
+python src/nvdajp-jtalk-dic/make_jdic.py --eng-dic bep --mecab-dict-index src/mecab-src/src/mecab-dict-index.exe --outdir build/dic
+
+# 英語発音ベースの読み（CMUdict + ARPAbet 変換）
+python src/nvdajp-jtalk-dic/make_jdic.py --eng-dic cmudict --mecab-dict-index src/mecab-src/src/mecab-dict-index.exe --outdir build/dic-cmudict
 ```
 
-生成される `build/dic/` に `sys.dic`、`matrix.bin`、`char.bin`、`unk.dic`、`dicrc`、`DIC_VERSION` が出力されます。
+生成される出力ディレクトリに `sys.dic`、`matrix.bin`、`char.bin`、`unk.dic`、`dicrc`、`DIC_VERSION` が出力されます。
 
 CSV ソースの検証のみを行う場合（MeCab コンパイル不要）:
 ```console
-python src/nvdajp-jtalk-dic/make_jdic.py --validate-only
+python src/nvdajp-jtalk-dic/make_jdic.py --eng-dic bep --validate-only
+python src/nvdajp-jtalk-dic/make_jdic.py --eng-dic cmudict --validate-only
 ```
 
 ## ユーザー辞書（独自語彙の追加）

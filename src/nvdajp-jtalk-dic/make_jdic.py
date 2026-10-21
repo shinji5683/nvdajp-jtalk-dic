@@ -149,6 +149,12 @@ def _parse_args():
 		default=Path("build") / "dic",
 		help="directory to write the built dictionary into (default: ./build/dic)",
 	)
+	parser.add_argument(
+		"--eng-dic",
+		choices=eng_dic_maker.VALID_ENG_DIC_SOURCES,
+		default=os.environ.get("NVDAJP_ENG_DIC", "bep").strip().lower() or "bep",
+		help="English word-reading dictionary source: 'bep' (bep-eng.dic, default) or 'cmudict' (CMUdict + ARPAbet rules)",
+	)
 	return parser.parse_args()
 
 
@@ -175,7 +181,7 @@ def _main():
 		tankan_dic_maker.make_dic(code, cs_file, thisdir)
 		custom_dic_maker.make_dic(code, thisdir)
 		engdic = jtdir / "bep-eng.dic"
-		eng_dic_maker.make_dic(engdic, code, thisdir)
+		eng_dic_maker.make_dic(engdic, code, thisdir, source=args.eng_dic)
 
 		files = [
 			"dicrc",
@@ -278,7 +284,7 @@ def _main():
 			print(f"WARNING: could not patch dicrc for UTF-8: {e}")
 		dic_version_file = outdir / "DIC_VERSION"
 		print(f"dic version file: {dic_version_file}")
-		version = f"libkuraji-jtalk-dic ({code}) {datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}"
+		version = f"nvdajp-jtalk-dic ({code}, eng_dic={args.eng_dic}) {datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}"
 		print(version)
 		dic_version_file.write_text(version + os.linesep, encoding="utf-8")
 
